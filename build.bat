@@ -22,7 +22,11 @@ FOR /R %LIB% %%f IN (*.a) DO (
     SET LIBS=!LIBS! %%f
 )
 
-SET CFLAGS=-g -Wall -Werror
+IF "%1"=="RELEASE" (
+    SET CFLAGS=-O2
+) ELSE (
+    SET CFLAGS=-g -Wall -Werror
+)
 SET IFLAGS=-Iinclude -I%LIB%/include
 SET LFLAGS=-lopengl32 -lgdi32
 
