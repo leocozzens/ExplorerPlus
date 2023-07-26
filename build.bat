@@ -1,4 +1,4 @@
-REM Project build script
+REM ExplorerPlus build script
 @ECHO OFF
 SetLocal EnableDelayedExpansion
 
