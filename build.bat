@@ -4,29 +4,40 @@ SetLocal EnableDelayedExpansion
 
 SET CC=g++
 SET EXT=cpp
-SET LIB=lib/x86-windows
+SET BASELIB=lib
+SET LIB=%BASELIB%/x86-windows
 SET PROJECT=ExplorerPlus
 SET SRC=src
 SET OBJ=obj
+SET LIBOBJ=%BASELIB%/%OBJ%
 SET BINDIR=bin
 
 IF "%1"=="CLEAN" (
     ECHO Cleaning dirs
     RMDIR /Q /S %BINDIR%
     RMDIR /Q /S %OBJ%
+    RMDIR /Q /S "%LIBOBJ%"
     EXIT /B 0
 )
 
-IF NOT EXIST %OBJ% MKDIR %OBJ%
-IF NOT EXIST %BINDIR% MKDIR %BINDIR%
+IF NOT EXIST "%OBJ%" MKDIR "%OBJ%"
+IF NOT EXIST "%BINDIR%" MKDIR "%BINDIR%"
+IF NOT EXIST "%BASELIB%" MKDIR "%BASELIB%"
+IF NOT EXIST "%LIBOBJ%" MKDIR "%LIBOBJ%"
 
 SET SRCS=
 FOR /R %SRC% %%f IN (*.%EXT%) DO (
     SET SRCS=!SRCS! %%f
 )
+
 SET LIBS=
 FOR /R %LIB% %%f IN (*.a) DO (
     SET LIBS=!LIBS! %%f
+)
+
+SET BASELIBS=
+FOR /R %BASELIB% %%f IN (*.cpp) DO (
+    SET BASELIBS=!BASELIBS! %%f
 )
 
 IF "%2"=="RELEASE" (
@@ -35,10 +46,20 @@ IF "%2"=="RELEASE" (
 ) ELSE (
     SET CFLAGS=-g -Wall
 )
-SET IFLAGS=-Iinclude -I%LIB%/include
+SET IFLAGS=-Iinclude -I%LIB%/include -I%BASELIB%/include
 SET LFLAGS=-lopengl32 -lgdi32
 
 ECHO Building %PROJECT% %RELEASE%
+
+FOR %%f IN (%BASELIBS%) DO (
+    IF "%1"=="" (
+        goto :SKIPLIB
+    )
+    ECHO Compiling lib %%~nf
+    %CC% %CFLAGS% -c %IFLAGS% -I%BASELIB%/internal "%%f" -o "%LIBOBJ%/%%~nf.o"
+    SET "LIBOBJS=!LIBOBJS! %LIBOBJ%/%%~nf.o"
+)
+:SKIPLIB
 
 FOR %%f IN (%SRCS%) DO (
     IF NOT "%1"=="" (
@@ -54,4 +75,4 @@ FOR %%f IN (%SRCS%) DO (
 )
 :BREAK
 ECHO Linking objects
-%CC% %CFLAGS% %OBJS% %LIBS% %LFLAGS% -o %BINDIR%/%PROJECT%.exe
+%CC% %CFLAGS% %IFLAGS% %OBJS% %LIBOBJS% %LIBS% %LFLAGS% -o %BINDIR%/%PROJECT%.exe

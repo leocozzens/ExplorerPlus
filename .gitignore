@@ -56,8 +56,8 @@ dkms.conf
 # Exclude bundled executables
 *.zip
 
-# Test text files
-*.test
-
 # Binaries
 *.bin
+
+# Temp config files
+*.ini
