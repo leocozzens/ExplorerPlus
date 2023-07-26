@@ -18,7 +18,7 @@ all: create_dirs
 all: $(BIN)
 
 release: CFLAGS = -Iinclude -O2
-release: new
+release: all
 
 $(BIN): $(OBJS)
 	$(CC) $(CFLAGS) $(OBJS) -o $@ $(SYSLIBS)
