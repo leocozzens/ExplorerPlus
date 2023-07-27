@@ -1,6 +1,6 @@
 @REM ExplorerPlus build script
-@REM Use "ALL" to compile with libraries
 @ECHO OFF
+ECHO Use "ALL" to compile with libraries
 SetLocal EnableDelayedExpansion
 
 SET CC=g++
@@ -53,30 +53,31 @@ SET LFLAGS=-lopengl32 -lgdi32
 ECHO Building %PROJECT% %RELEASE%
 
 FOR %%f IN (%BASELIBS%) DO (
-    IF NOT "%1"=="" (
-        IF NOT "%1"=="NOLIB" (
-            ECHO Compiling lib %%~nf
-            %CC% %CFLAGS% -c %IFLAGS% -I%BASELIB%/internal "%%f" -o "%LIBOBJ%/%%~nf.o"
-        )
+    IF "%1"=="ALL" (
+        ECHO Compiling lib %%~nf
+        %CC% %CFLAGS% -c %IFLAGS% -I%BASELIB%/internal "%%f" -o "%LIBOBJ%/%%~nf.o"
     )
     SET "LIBOBJS=!LIBOBJS! %LIBOBJ%/%%~nf.o"
 )
 
 FOR %%f IN (%SRCS%) DO (
-    IF NOT "%1"=="" (
-        IF NOT "%1"=="ALL" (
-            IF NOT "%1"=="NOLIB" (
-                IF NOT "%1"=="%%~nf" (
-                    ECHO "%1" is not a valid source file
-                    EXIT /B 0 
-                )
-            )
-        )
+    IF "%1"=="" (
+        ECHO Compiling %%~nf
+        %CC% %CFLAGS% -c %IFLAGS% "%%f" -o "%OBJ%/%%~nf.o"
     )
-    ECHO Compiling %%~nf
-    %CC% %CFLAGS% -c %IFLAGS% "%%f" -o "%OBJ%/%%~nf.o"
+    IF "%1"=="ALL" (
+        ECHO Compiling %%~nf
+        %CC% %CFLAGS% -c %IFLAGS% "%%f" -o "%OBJ%/%%~nf.o"
+    )
+    IF "%1"=="NOLIB" (
+        ECHO Compiling %%~nf
+        %CC% %CFLAGS% -c %IFLAGS% "%%f" -o "%OBJ%/%%~nf.o"
+    )
+    IF "%1"=="%%~nf" (
+        ECHO Compiling %%~nf
+        %CC% %CFLAGS% -c %IFLAGS% "%%f" -o "%OBJ%/%%~nf.o"
+    )
     SET "OBJS=!OBJS! %OBJ%/%%~nf.o"
 )
-:BREAK
 ECHO Linking objects
 %CC% %CFLAGS% %IFLAGS% %OBJS% %LIBOBJS% %LIBS% %LFLAGS% -o %BINDIR%/%PROJECT%.exe

@@ -34,11 +34,12 @@ $(OBJ)/%.o: $(SRC)/%.$(EXT)
 
 $(LIB)/$(OBJ)/%.o: $(LIB)/%.$(EXT)
 	$(CC) $(IFLAGS) $(INTERNALINC) $(CFLAGS) -c $< -o $@
-# %.o: $(SRC)/%.$(EXT)
-# 	$(CC) $(IFLAGS) $(CFLAGS) -c $< -o $(OBJ)/$@	
+
+ %.o: $(SRC)/%.$(EXT)
+	$(CC) $(IFLAGS) $(CFLAGS) -c $< -o $(OBJ)/$@	
 
 link: $(OBJS)
-	$(CC) $(IFLAGS) $(CFLAGS) $(OBJS) -o $(BIN)
+	$(CC) $(IFLAGS) $(CFLAGS) $(OBJS) $(LIBOBJS) -o $(BIN) $(SYSLIBS)
 
 clean:
 	rm -r $(BINDIR) $(OBJ) $(LIBOBJ)
