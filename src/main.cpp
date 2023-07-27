@@ -3,7 +3,10 @@
 
 int main(void) {
     Interface display;
-    display.event_loop();
+    FrameInfo frameData { 1 };
+    while(display.stay_open()) {
+        display.show_frame(&frameData);
+    }
     display.cleanup();
 
     return 0;
