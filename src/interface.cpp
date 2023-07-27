@@ -1,18 +1,19 @@
 // C++ standard libs
 #include <iostream>
 #include <cstdlib>
+#include <cstring>
 // External libs
 #include <GLFW/glfw3.h>
 
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h> // TODO: Replace with custom tool
+#include <icon.h>
 
 #include <imgui.h>
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_opengl3.h>
 // Local headers
 #include <interface.hpp>
-
 
 #define UTIL_CHECK(_Util, _Failure, _Err) if(!(_Util)) { std::cerr << "ERROR: Failed " << (_Failure) << '\n'; std::exit(_Err); }
 #define UTIL_CHECK_TERM(_Util, _Failure, _Termination, _Err) if((_Util) == nullptr) { std::cerr << "ERROR: Failed " << (_Failure) << '\n'; _Termination; std::exit(_Err); }
@@ -41,14 +42,15 @@ void Interface::establish_window_height(int &winWidth, int &winHeight) {
     winHeight = mode->height * HEIGHT_ASPECT;
 }
 
-void Interface::set_icon(GLFWwindow *win) {
+void Interface::set_icon(GLFWwindow *win, const char *filePath) {
     int imgWidth, imgHeight, channels;
-    unsigned char *pixels = stbi_load("assets/images/icon.png", &imgWidth, &imgHeight, &channels, 4);
+    unsigned char *pixels = stbi_load_from_memory(icon::data, icon::dataSize, &imgWidth, &imgHeight, &channels, 4);
     GLFWimage images[1];
     images[0].width = imgWidth;
     images[0].height = imgHeight;
     images[0].pixels = pixels;
     glfwSetWindowIcon(win, 1, images);
+    stbi_image_free(pixels);
 }
 
 // Instance methods
@@ -60,7 +62,7 @@ void Interface::start_glfw(void) {
     UTIL_CHECK_TERM(this->mainWin, "GLFW window", glfwTerminate(), EXIT_FAILURE);
     glfwMakeContextCurrent(this->mainWin);
     glfwSwapInterval(1); // Enable vsync
-    set_icon(this->mainWin);
+    set_icon(this->mainWin, "assets/images/icon.png");
 }
 
 void Interface::start_imgui(void) {

@@ -24,7 +24,7 @@ class Interface {
     ImVec4 *bgColor;
 
     static void establish_window_height(int &winWidth, int &winHeight);
-    static void set_icon(GLFWwindow *win);
+    static void set_icon(GLFWwindow *win, const char *filePath);
 
     void start_glfw(void);
     void start_imgui(void);
