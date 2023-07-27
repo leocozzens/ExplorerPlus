@@ -80,4 +80,4 @@ FOR %%f IN (%SRCS%) DO (
     SET "OBJS=!OBJS! %OBJ%/%%~nf.o"
 )
 ECHO Linking objects
-%CC% %CFLAGS% %IFLAGS% %OBJS% %LIBOBJS% %LIBS% %LFLAGS% -o %BINDIR%/%PROJECT%.exe
+%CC% %CFLAGS% %IFLAGS% %OBJS% %LIBOBJS% %LIBS% %LFLAGS% -o %BINDIR%/%PROJECT%.exe -mwindows
