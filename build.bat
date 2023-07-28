@@ -15,8 +15,8 @@ SET BINDIR=bin
 
 IF "%1"=="CLEAN" (
     ECHO Cleaning dirs
-    RMDIR /Q /S %BINDIR%
-    RMDIR /Q /S %OBJ%
+    RMDIR /Q /S "%BINDIR%"
+    RMDIR /Q /S "%OBJ%"
     RMDIR /Q /S "%LIBOBJ%"
     EXIT /B 0
 )
@@ -80,4 +80,5 @@ FOR %%f IN (%SRCS%) DO (
     SET "OBJS=!OBJS! %OBJ%/%%~nf.o"
 )
 ECHO Linking objects
-%CC% %CFLAGS% %IFLAGS% %OBJS% %LIBOBJS% %LIBS% %LFLAGS% -o %BINDIR%/%PROJECT%.exe -mwindows
+%CC% %CFLAGS% %IFLAGS% %OBJS% %LIBOBJS% %LIBS% %LFLAGS% -o %BINDIR%/%PROJECT%.exe 
+@REM -mwindows

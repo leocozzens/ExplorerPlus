@@ -13,6 +13,7 @@
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_opengl3.h>
 // Local headers
+#include <frame_data.h>
 #include <interface.hpp>
 
 #define UTIL_CHECK(_Util, _Failure, _Err) if(!(_Util)) { std::cerr << "ERROR: Failed " << (_Failure) << '\n'; std::exit(_Err); }
@@ -22,14 +23,16 @@
 #define WIDTH_ASPECT 0.55F
 #define HEIGHT_ASPECT 0.45F
 #define IMGUI_ENABLE_CALLBACKS true
-// #define ENABLE_MERGE
+// #define DISABLE_MERGE
 // #define DISABLE_DOCKING
 // #define LIGHT_ENABLE
 
 // Constructor/Destructor
-Interface::Interface(void) {
+Interface::Interface(FrameInfo *frameData) {
     this->start_glfw();
     this->start_imgui();
+    this->frameData = frameData;
+    std::memset(this->frameData->searchBuff, '\0', sizeof(this->frameData->searchBuff));
 }
 
 // Static methods
@@ -53,6 +56,13 @@ void Interface::set_icon(GLFWwindow *win, const char *filePath) {
     stbi_image_free(pixels);
 }
 
+void Interface::new_frame(void) {
+    glfwPollEvents();
+    ImGui_ImplOpenGL3_NewFrame();
+    ImGui_ImplGlfw_NewFrame();
+    ImGui::NewFrame();
+}
+
 // Instance methods
 void Interface::start_glfw(void) {
     UTIL_CHECK(glfwInit(), "GLFW init", EXIT_FAILURE);
@@ -74,23 +84,23 @@ void Interface::start_imgui(void) {
     #ifndef DISABLE_DOCKING
     this->io->ConfigFlags |= ImGuiConfigFlags_DockingEnable;         // Enable Docking
     this->io->ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;       // Enable Multi-Viewport / Platform Windows
+    this->io->ConfigViewportsNoTaskBarIcon = true;                   // Auxiliary windows will not show on taskbar
 
     // Tweak auxiliary viewports
     ImGuiStyle &style = ImGui::GetStyle();
     style.WindowRounding = 0.0F;
     style.Colors[ImGuiCol_WindowBg].w = 1.0F;
     #endif
-    #ifndef ENABLE_MERGE // Allow imgui to render windows together if their viewports are contained within the parent
+    #ifdef DISABLE_MERGE // Disallow imgui from rendering windows together
     this->io->ConfigViewportsNoAutoMerge = true;
     #endif
-    this->io->ConfigViewportsNoTaskBarIcon = true; // Auxiliary windows will not show on taskbar
 
     #ifndef LIGHT_ENABLE
     ImGui::StyleColorsDark();
     this->bgColor = new ImVec4(1.00F, 1.00F, 1.00F, 0.12F);
     #else
     ImGui::StyleColorsLight();
-    this->bgColor = ImVec4(1.00F, 1.00F, 1.00F, 0.90F);
+    this->bgColor = new ImVec4(1.00F, 1.00F, 1.00F, 0.90F);
     #endif
 
     // Setup Platform/Renderer backends
@@ -98,14 +108,24 @@ void Interface::start_imgui(void) {
     ImGui_ImplOpenGL3_Init();
 }
 
-void Interface::show_frame(FrameInfo *frameData) {
-    glfwPollEvents();
+void Interface::show_frame() {
+    new_frame();
+    set_internals();
+    render_viewport();
 
-    ImGui_ImplOpenGL3_NewFrame();
-    ImGui_ImplGlfw_NewFrame();
-    ImGui::NewFrame();
+    #ifndef DISABLE_DOCKING
+    if (this->io->ConfigFlags & ImGuiConfigFlags_ViewportsEnable) {
+        GLFWwindow *backupCurrentContext = glfwGetCurrentContext();
+        ImGui::UpdatePlatformWindows();
+        ImGui::RenderPlatformWindowsDefault();
+        glfwMakeContextCurrent(backupCurrentContext);
+    }
+    #endif
 
-    // Rendering
+    glfwSwapBuffers(this->mainWin);
+}
+
+void Interface::render_viewport(void) {
     ImGui::Render();
     int display_w, display_h;
     glfwGetFramebufferSize(this->mainWin, &display_w, &display_h);
@@ -113,17 +133,28 @@ void Interface::show_frame(FrameInfo *frameData) {
     glClearColor(this->bgColor->x * this->bgColor->w, this->bgColor->y * this->bgColor->w, this->bgColor->z * this->bgColor->w, this->bgColor->w);
     glClear(GL_COLOR_BUFFER_BIT);
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+}
 
-    #ifndef DISABLE_DOCKING
-    if (this->io->ConfigFlags & ImGuiConfigFlags_ViewportsEnable) {
-        GLFWwindow* backup_current_context = glfwGetCurrentContext();
-        ImGui::UpdatePlatformWindows();
-        ImGui::RenderPlatformWindowsDefault();
-        glfwMakeContextCurrent(backup_current_context);
+void Interface::set_internals(void) {
+    ImGui::DockSpaceOverViewport(ImGui::GetMainViewport());
+    
+    int parentX, parentY, parentHeight, parentWidth;
+    glfwGetWindowPos(this->mainWin, &parentX, &parentY);
+    glfwGetWindowSize(this->mainWin, &parentWidth, &parentHeight);
+    
+    ImGui::SetNextWindowSize(ImVec2(parentWidth/3.0, parentHeight));
+    ImGui::SetNextWindowPos(ImVec2(parentX, parentY));
+    ImGui::Begin(" ", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoScrollbar);
+
+    bool shouldRead = ImGui::InputText("Search", this->frameData->searchBuff, sizeof(this->frameData->searchBuff), ImGuiInputTextFlags_EnterReturnsTrue);
+    if(shouldRead) {
+        std::unique_lock<std::mutex> searchLock(this->frameData->searchLock);
+        this->frameData->searchCheck.notify_one();
+        this->frameData->searchCheck.wait(searchLock);
+        std::memset(this->frameData->searchBuff, '\0', strnlen(this->frameData->searchBuff, sizeof(this->frameData->searchBuff)));
+        searchLock.unlock();
     }
-    #endif
-
-    glfwSwapBuffers(this->mainWin);
+    ImGui::End();
 }
 
 void Interface::cleanup(void) {
