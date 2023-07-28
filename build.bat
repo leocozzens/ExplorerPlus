@@ -43,7 +43,7 @@ FOR /R %BASELIB% %%f IN (*.cpp) DO (
 
 IF "%2"=="RELEASE" (
     SET RELEASE=for release
-    SET CFLAGS=-O2
+    SET CFLAGS=-O2 -mwindows
 ) ELSE (
     SET CFLAGS=-g -Wall
 )
@@ -80,5 +80,4 @@ FOR %%f IN (%SRCS%) DO (
     SET "OBJS=!OBJS! %OBJ%/%%~nf.o"
 )
 ECHO Linking objects
-%CC% %CFLAGS% %IFLAGS% %OBJS% %LIBOBJS% %LIBS% %LFLAGS% -o %BINDIR%/%PROJECT%.exe 
-@REM -mwindows
+%CC% %CFLAGS% %IFLAGS% %OBJS% %LIBOBJS% %LIBS% %LFLAGS% -o %BINDIR%/%PROJECT%.exe
