@@ -32,6 +32,7 @@ class Interface {
 
     void start_glfw(void);
     void start_imgui(void);
+    void set_font(void);
     void render_viewport(void);
     void set_internals(void);
 };

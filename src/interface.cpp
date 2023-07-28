@@ -7,13 +7,14 @@
 
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h> // TODO: Replace with custom tool
-#include <icon.h>
+#include <icon.hpp>
 
 #include <imgui.h>
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_opengl3.h>
 // Local headers
 #include <frame_data.h>
+#include <opensans_regular.hpp>
 #include <interface.hpp>
 
 #define UTIL_CHECK(_Util, _Failure, _Err) if(!(_Util)) { std::cerr << "ERROR: Failed " << (_Failure) << '\n'; std::exit(_Err); }
@@ -22,6 +23,7 @@
 #define WINDOW_NAME "ExplorerPlus"
 #define WIDTH_ASPECT 0.55F
 #define HEIGHT_ASPECT 0.45F
+#define FONT_SIZE 16
 #define IMGUI_ENABLE_CALLBACKS true
 // #define DISABLE_MERGE
 // #define DISABLE_DOCKING
@@ -31,6 +33,7 @@
 Interface::Interface(FrameInfo *frameData) {
     this->start_glfw();
     this->start_imgui();
+    this->set_font();
     this->frameData = frameData;
     std::memset(this->frameData->searchBuff, '\0', sizeof(this->frameData->searchBuff));
 }
@@ -47,7 +50,7 @@ void Interface::establish_window_height(int &winWidth, int &winHeight) {
 
 void Interface::set_icon(GLFWwindow *win, const char *filePath) {
     int imgWidth, imgHeight, channels;
-    unsigned char *pixels = stbi_load_from_memory(icon::data, icon::dataSize, &imgWidth, &imgHeight, &channels, 4);
+    unsigned char *pixels = stbi_load_from_memory(Icon::data, Icon::dataSize, &imgWidth, &imgHeight, &channels, 4);
     GLFWimage images[1];
     images[0].width = imgWidth;
     images[0].height = imgHeight;
@@ -106,6 +109,13 @@ void Interface::start_imgui(void) {
     // Setup Platform/Renderer backends
     ImGui_ImplGlfw_InitForOpenGL(this->mainWin, IMGUI_ENABLE_CALLBACKS);
     ImGui_ImplOpenGL3_Init();
+}
+
+void Interface::set_font(void) {
+    unsigned int compressedSize;
+    const unsigned int *defaultFont = OpenSansRegular::get_data(compressedSize);
+    this->io->Fonts->AddFontFromMemoryCompressedTTF(defaultFont, compressedSize, FONT_SIZE);
+    this->io->FontDefault = this->io->Fonts->Fonts.back(); // Set the last loaded font as the default
 }
 
 void Interface::show_frame() {
