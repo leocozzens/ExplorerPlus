@@ -23,6 +23,7 @@ class Interface {
     ImGuiIO *io;
     // Colors
     ImVec4 *bgColor;
+    ImVec4 *fgColor;
     // External data
     FrameInfo *frameData;
 

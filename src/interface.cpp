@@ -90,9 +90,8 @@ void Interface::start_imgui(void) {
     this->io->ConfigViewportsNoTaskBarIcon = true;                   // Auxiliary windows will not show on taskbar
 
     // Tweak auxiliary viewports
-    ImGuiStyle &style = ImGui::GetStyle();
-    style.WindowRounding = 0.0F;
-    style.Colors[ImGuiCol_WindowBg].w = 1.0F;
+    ImGui::GetStyle().WindowRounding = 0.0F;
+    ImGui::GetStyle().Colors[ImGuiCol_WindowBg].w = 1.0F;
     #endif
     #ifdef DISABLE_MERGE // Disallow imgui from rendering windows together
     this->io->ConfigViewportsNoAutoMerge = true;
@@ -101,9 +100,11 @@ void Interface::start_imgui(void) {
     #ifndef LIGHT_ENABLE
     ImGui::StyleColorsDark();
     this->bgColor = new ImVec4(1.00F, 1.00F, 1.00F, 0.12F);
+    this->fgColor = new ImVec4(0.00F, 0.00F, 0.00F, 0.50F);
     #else
     ImGui::StyleColorsLight();
-    this->bgColor = new ImVec4(1.00F, 1.00F, 1.00F, 0.90F);
+    this->bgColor = new ImVec4(1.00F, 1.00F, 1.00F, 1.00F);
+    this->fgColor = new ImVec4(0.00F, 0.00F, 0.00F, 0.10F);
     #endif
 
     // Setup Platform/Renderer backends
@@ -118,7 +119,7 @@ void Interface::set_font(void) {
     this->io->FontDefault = this->io->Fonts->Fonts.back(); // Set the last loaded font as the default
 }
 
-void Interface::show_frame() {
+void Interface::show_frame(void) {
     new_frame();
     set_internals();
     render_viewport();
@@ -152,8 +153,11 @@ void Interface::set_internals(void) {
     glfwGetWindowPos(this->mainWin, &parentX, &parentY);
     glfwGetWindowSize(this->mainWin, &parentWidth, &parentHeight);
     
+    ImGui::PushStyleColor(ImGuiCol_WindowBg, *this->fgColor);
+    ImGui::GetStyle().Colors[ImGuiCol_FrameBg] = *this->fgColor;
+
     ImGui::SetNextWindowSize(ImVec2(parentWidth/3.0, parentHeight));
-    ImGui::SetNextWindowPos(ImVec2(parentX, parentY));
+    ImGui::SetNextWindowPos(ImVec2(parentX + (parentWidth/3.0) * 2, parentY));
     ImGui::Begin(" ", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoScrollbar);
 
     bool shouldRead = ImGui::InputText("Search", this->frameData->searchBuff, sizeof(this->frameData->searchBuff), ImGuiInputTextFlags_EnterReturnsTrue);
@@ -165,6 +169,7 @@ void Interface::set_internals(void) {
         searchLock.unlock();
     }
     ImGui::End();
+    ImGui::PopStyleColor();
 }
 
 void Interface::cleanup(void) {
@@ -176,6 +181,7 @@ void Interface::cleanup(void) {
     glfwTerminate();
 
     delete this->bgColor;
+    delete this->fgColor;
 }
 
 // Getters
