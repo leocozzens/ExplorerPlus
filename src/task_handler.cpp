@@ -9,7 +9,7 @@
 // Constructor/Destructor
 TaskHandler::TaskHandler(FrameInfo *frameData) {
     this->frameData = frameData;
-    std::thread searchLoop(&handle_search, this);
+    std::thread searchLoop(&TaskHandler::handle_search, this);
     searchLoop.detach();
 }
 
