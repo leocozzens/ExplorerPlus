@@ -1,0 +1,11 @@
+function(DisableSettings SETTINGS)
+    foreach(SETTING ${SETTINGS})
+        set(${SETTING} OFF CACHE BOOL "" FORCE)
+    endforeach()
+endfunction()
+
+function(EnableSettings SETTINGS)
+    foreach(SETTING ${SETTINGS})
+        set(${SETTING} ON CACHE BOOL "" FORCE)
+    endforeach()
+endfunction()

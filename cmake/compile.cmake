@@ -1,0 +1,6 @@
+function(CompileStaticLibrary)
+    cmake_parse_arguments(LIB "" "NAME;SRC_DIR" "SRCS;DEPS" ${ARGN})
+    list(TRANSFORM LIB_SRCS PREPEND ${CMAKE_CURRENT_SOURCE_DIR}/${LIB_SRC_DIR}/src/)
+    add_library(${LIB_NAME} STATIC ${LIB_SRCS})
+    target_link_libraries(${LIB_NAME} PUBLIC ${LIB_DEPS})
+endfunction()

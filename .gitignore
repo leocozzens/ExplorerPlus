@@ -61,3 +61,6 @@ dkms.conf
 
 # Temp config files
 *.ini
+
+# Build files
+build/
