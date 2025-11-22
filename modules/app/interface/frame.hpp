@@ -1,4 +1,5 @@
 #ifndef INTERFACE_FRAME_HPP
+#define INTERFACE_FRAME_HPP
 
 #include <wx/wx.h>
 #include <app/interface/widgets.hpp>
