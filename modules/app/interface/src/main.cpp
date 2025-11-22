@@ -1,10 +1,10 @@
 // External libraries
 #include <wx/wx.h>
 // Local headers
-#include <app/interface/controller.hpp>
+#include <app/interface/launcher.hpp>
 
 #ifdef RELEASE_BUILD
-wxIMPLEMENT_APP(Controller);
+wxIMPLEMENT_APP(Launcher);
 #else
-wxIMPLEMENT_APP_CONSOLE(Controller);
+wxIMPLEMENT_APP_CONSOLE(Launcher);
 #endif

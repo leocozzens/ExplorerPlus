@@ -7,7 +7,7 @@ if(wxWidgets_USE_FILE)
     include(${wxWidgets_USE_FILE})
 endif()
 
-set(SRCS main.cpp frame.cpp controller.cpp widgets.cpp)
+set(SRCS main.cpp frame.cpp launcher.cpp widgets.cpp)
 list(TRANSFORM SRCS PREPEND ${CMAKE_CURRENT_SOURCE_DIR}/interface/src/)
 if(WIN32 AND CMAKE_BUILD_TYPE STREQUAL "Release")
     add_executable(${PROJECT_NAME} WIN32 ${SRCS})

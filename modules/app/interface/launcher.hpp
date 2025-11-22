@@ -4,7 +4,7 @@
 
 class MasterFrame;
 
-class Controller : public wxApp {
+class Launcher : public wxApp {
     public:
         bool OnInit();
     private:
