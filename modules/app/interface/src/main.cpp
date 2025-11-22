@@ -1,16 +1,10 @@
+// External libraries
 #include <wx/wx.h>
-
-class MyApp : public wxApp {
-public:
-    bool OnInit() override {
-        wxFrame* frame = new wxFrame(nullptr, wxID_ANY, "Static wxWidgets");
-        frame->Show();
-        return true;
-    }
-};
+// Local headers
+#include <app/interface/controller.hpp>
 
 #ifdef RELEASE_BUILD
-wxIMPLEMENT_APP(MyApp);
+wxIMPLEMENT_APP(Controller);
 #else
-wxIMPLEMENT_APP_CONSOLE(MyApp);
+wxIMPLEMENT_APP_CONSOLE(Controller);
 #endif
