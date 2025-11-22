@@ -1,5 +1,5 @@
 set(wxBUILD_SHARED OFF CACHE BOOL "Build static library")
-set(wxBUILD_MONOLITHIC ON CACHE BOOL "Build mono liobrary.")
+set(wxBUILD_MONOLITHIC ON CACHE BOOL "Build mono library.")
 
 set(CMAKE_PREFIX_PATH "C:/Program Files/wxWidgets")
 find_package(wxWidgets 3.2.8 REQUIRED COMPONENTS mono)

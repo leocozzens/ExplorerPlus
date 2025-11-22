@@ -2,13 +2,15 @@
 
 #include <wx/app.h>
 
-class MasterFrame;
+namespace ExplorerPlus {
+    class MasterFrame;
 
-class Launcher : public wxApp {
-    public:
-        bool OnInit();
-    private:
-        MasterFrame *m;
-};
+    class Launcher : public wxApp {
+        public:
+            bool OnInit();
+        private:
+            MasterFrame *m;
+    };
+}
 
 #endif

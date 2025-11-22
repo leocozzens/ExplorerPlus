@@ -4,7 +4,7 @@
 #include <app/interface/launcher.hpp>
 
 #ifdef RELEASE_BUILD
-wxIMPLEMENT_APP(Launcher);
+wxIMPLEMENT_APP(ExplorerPlus::Launcher);
 #else
-wxIMPLEMENT_APP_CONSOLE(Launcher);
+wxIMPLEMENT_APP_CONSOLE(ExplorerPlus::Launcher);
 #endif

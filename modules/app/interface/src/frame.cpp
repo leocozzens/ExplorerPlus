@@ -5,6 +5,8 @@
 // Local headers
 #include <app/interface/frame.hpp>
 
+using namespace ExplorerPlus;
+
 wxBEGIN_EVENT_TABLE(MasterFrame, wxFrame)
 wxEND_EVENT_TABLE()
 
