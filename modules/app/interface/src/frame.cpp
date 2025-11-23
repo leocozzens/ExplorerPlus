@@ -28,7 +28,7 @@ MasterFrame::MasterFrame(const wxString &title):
     );
 }
 
-MasterFrame::~MasterFrame(void) {
+MasterFrame::~MasterFrame() {
 
 }
 

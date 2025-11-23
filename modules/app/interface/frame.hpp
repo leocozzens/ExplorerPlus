@@ -8,7 +8,7 @@ namespace ExplorerPlus {
     class MasterFrame : public wxFrame {
         public:
             MasterFrame(const wxString &title);
-            ~MasterFrame(void);
+            ~MasterFrame();
         public:
             wxDECLARE_EVENT_TABLE();
             void button_clicked(wxCommandEvent &evt);
