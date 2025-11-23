@@ -1,7 +1,5 @@
 // Standard headers
 #include <iostream>
-// External libraries
-#include <wx/wx.h>
 // Local headers
 #include <app/interface/frame.hpp>
 
@@ -9,7 +7,6 @@ using namespace ExplorerPlus;
 
 wxBEGIN_EVENT_TABLE(MasterFrame, wxFrame)
 wxEND_EVENT_TABLE()
-
 
 MasterFrame::MasterFrame(const wxString &title):
     wxFrame(nullptr, wxID_ANY, title, wxDefaultPosition, wxSize(800, 600)),
