@@ -13,7 +13,11 @@ namespace ExplorerPlus {
             wxDECLARE_EVENT_TABLE();
             void button_clicked(wxCommandEvent &evt);
         private:
+            static constexpr double frameScale = 0.5;
+            static constexpr double get_aspect_ratio(void);
+
             MainWidgets components;
+            void determine_size(int &width, int &height);
     };
 }
 
